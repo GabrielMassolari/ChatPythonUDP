@@ -42,6 +42,19 @@ def chat_server(udp):
                 if DEBUG:
                     print(f"*ENTROU*{msg_json} -> {cliente}")
                 udp.sendto(msg_json.encode("utf-8"), cliente)
+
+                msg = {
+                    "id_sala": string_dict["id_sala"],
+                    "nome": string_dict["nome"],
+                    "msg": f"{string_dict['nome']} ENTROU NA SALA"
+                }
+                msg_json = json.dumps(msg)
+
+                #Envio de Mensagem para os usuarios do grupo
+                for users in LISTA_USUARIO:
+                    if users["id_sala"] == string_dict["id_sala"]:
+                        if users["conexao"] != cliente:
+                            udp.sendto(msg_json.encode("utf-8"), users["conexao"])
             elif string_dict["acao"] == 2:
                 remover_usuario(string_dict, cliente)
                 msg = {
@@ -54,6 +67,19 @@ def chat_server(udp):
                 if DEBUG:
                     print(f"*REMOVIDO*{msg_json} -> {cliente}")
                 udp.sendto(msg_json.encode("utf-8"), cliente)
+
+                msg = {
+                    "id_sala": string_dict["id_sala"],
+                    "nome": string_dict["nome"],
+                    "msg": f"{string_dict['nome']} SAIU DA SALA"
+                }
+                msg_json = json.dumps(msg)
+
+                #Envio de Mensagem para os usuarios do grupo
+                for users in LISTA_USUARIO:
+                    if users["id_sala"] == string_dict["id_sala"]:
+                        if users["conexao"] != cliente:
+                            udp.sendto(msg_json.encode("utf-8"), users["conexao"])
             elif string_dict["acao"] == 3:
                 msg = {
                     "acao": 3,
@@ -82,7 +108,6 @@ def chat_server(udp):
                             udp.sendto(msg_json.encode("utf-8"), users["conexao"])
         except Exception as ex:
             pass
-    udp.close()
 
 def main():
     udp = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
