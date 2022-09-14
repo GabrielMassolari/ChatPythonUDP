@@ -1,5 +1,4 @@
 import socket
-import _thread
 import json
 
 DEBUG = True
@@ -61,10 +60,22 @@ def chat_server(udp):
                     "nome": string_dict["nome"],
                     "id_sala": string_dict["id_sala"],
                     "id_msg": string_dict["id_msg"],
-                    "msg": string_dict["msg"],
                     "status": 1
                 }
                 msg_json = json.dumps(msg)
+                if DEBUG:
+                    print(f"*MSG RECEBIDA*{msg_json} -> {cliente}")
+                #Mensagem de confirmacao para quem enviou
+                udp.sendto(msg_json.encode("utf-8"), cliente)
+                
+                msg = {
+                    "id_sala": string_dict["id_sala"],
+                    "nome": string_dict["nome"],
+                    "msg": string_dict["msg"]
+                }
+                msg_json = json.dumps(msg)
+
+                #Envio de Mensagem para os usuarios do grupo
                 for users in LISTA_USUARIO:
                     if users["id_sala"] == string_dict["id_sala"]:
                         if users["conexao"] != cliente:
