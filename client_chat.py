@@ -116,7 +116,7 @@ def client():
         string_json = json.dumps(msg)
         udp.sendto(string_json.encode('utf-8'), dest)
         ID_MSG += 1
-        if not verificarEnvioMensagem():
+        if message != "!sair" and not verificarEnvioMensagem():
             print("**SERVIDOR DESCONECTADO**")
             break
     udp.close()
